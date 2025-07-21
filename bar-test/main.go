@@ -1,5 +1,5 @@
 package bartest
 
 func main() {
-	println("bar-test project")
+	println("bar-test projects")
 }
