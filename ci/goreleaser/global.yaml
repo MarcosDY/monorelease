@@ -1,0 +1,36 @@
+version: 2
+
+env:
+  - GHCR_REPO=ghcr.io/marcosdy
+  - PUBLIC_S3_BUCKET=monorepo-releases
+
+nightly:
+  version_template: "{{ .Version }}-{{ .ShortCommit }}-dev"
+
+git:
+  tag_sort: semver
+  ignore_tag_prefixes:
+    - baz-test-helm
+    - baz-test-helm
+
+# before:
+  # hooks:
+    # #  Generate the release notes using our custom tool so they can be displayed in GH releases
+    # - cmd: >-
+        # go run ./deploy/create-release-notes
+        # --component {{ envOrDefault "RELEASE_NOTES_COMPONENT" .ProjectName }}
+        # --output-file ./tmp/{{ .ProjectName }}-release-notes.md
+        # --latest-tag {{if .IsRelease}}{{ .PrefixedTag }}{{ else }}HEAD{{ end }}
+      # env:
+        # - GITHUB_TOKEN={{ .Env.GITHUB_TOKEN }}
+      # if: "{{ .IsRelease }}"
+
+release:
+  prerelease: auto
+  name_template: "{{ envOrDefault \"RELEASE_NOTES_COMPONENT\" .ProjectName }}-v{{.Version}}"
+  skip_upload: true
+  mode: replace
+  header:
+    from_file:
+      path: "./tmp/{{ .ProjectName }}-release-notes.md"
+

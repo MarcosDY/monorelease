@@ -1,0 +1,16 @@
+version: 2
+
+project_name: foo-test
+
+monorepo:
+  tag_prefix: "foo-test-"
+  dir: foo-test
+
+env:
+  - RELEASE_NOTES_COMPONENT=foo-test
+
+includes:
+  - from_file:
+      path: ci/goreleaser/global.yaml
+
+

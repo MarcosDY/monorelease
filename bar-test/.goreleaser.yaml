@@ -1,0 +1,22 @@
+version: 2
+
+project_name: bar-test
+
+monorepo:
+  tag_prefix: "bar-test-"
+  dir: bar-test
+
+includes:
+  - from_file:
+      path: ci/goreleaser/global.yaml
+
+env:
+  - GHCR_REPO_NAME=bar-test
+  - TARGET=//bar-test
+  - RELEASE_NOTES_COMPONENT=bar-test
+
+# must be set if only release_images.yaml is called because the multi arch image
+# is a directory so a checksum cannot be generated
+checksum:
+  disable: true
+
