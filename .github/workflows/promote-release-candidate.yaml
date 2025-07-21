@@ -1,0 +1,106 @@
+name: Promote Release Candidate
+description: Promotes a release candidate to a release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_candidate_tag:
+        description: 'Release candidate tag to promote'
+        required: true
+        type: string
+
+permissions:
+  actions: write # Used by catchpoint/workflow-telemetry-action and to trigger action on documentation repo
+  id-token: write # This is required for requesting the JWT
+  contents: write # This is required for uploading to GitHub Releases
+  issues: read # This is required for fetching PRs
+  pull-requests: write # This is required for fetching PRs
+  packages: write # This is required for uploading to GitHub Packages
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      tag_component: ${{ steps.parse-tag.outputs.tag_component }}
+      components: ${{ steps.parse-tag.outputs.components }}
+      version: ${{ steps.parse-tag.outputs.version }}
+      release_candidate_commit_sha: ${{ steps.find-release-candidate.outputs.release_candidate_commit_sha }}
+      pull_request_number: ${{ steps.check-helm-chart-pr.outputs.pull_request_number }}
+    steps:
+      - name: Parse release candidate tag
+        id: parse-tag
+        run: |
+          if [[ "${{ inputs.release_candidate_tag }}" =~ ^([a-zA-Z0-9._-]+)-v([0-9]+\.[0-9]+\.[0-9]+)-rc([0-9]+)$ ]]; then
+            echo "Parsed tag: ${{ inputs.release_candidate_tag }}"
+            tag_component="${BASH_REMATCH[1]}"
+            echo "tag_component=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+            echo "version=${BASH_REMATCH[2]}" >> "$GITHUB_OUTPUT"
+          else
+            echo "Invalid tag format"
+            exit 1
+          fi
+
+          if [[ "${tag_component}" == "foo-test" ]]; then
+            echo 'components=["foo-test", "baz-test"]' >> "$GITHUB_OUTPUT"
+          elif [[ "${tag_component}" == "bar-test" ]]; then
+            echo 'components=["bar-test"]' >> "$GITHUB_OUTPUT"
+          else
+            echo "components=[\"${tag_component}\"]" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Tag the release candidate commit with the release version
+        id: find-release-candidate
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const releaseCandidateTag = '${{ inputs.release_candidate_tag }}';
+            const releaseTag = releaseCandidateTag.replace(/-rc\d+$/, '');
+            if (releaseTag === releaseCandidateTag) {
+              core.setFailed('Release candidate tag does not have the expected "-rc1" suffix');
+              return;
+            }
+
+            // Get all tags matching the component and version
+            const { data: existingTags } = await github.rest.git.listMatchingRefs({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `tags/${releaseTag}`
+            });
+
+            if (existingTags.length === 0) {
+              core.setFailed('Could not find any existing tags. Is release_candidate_tag incorrect?');
+              return;
+            }
+
+            // Check if the release candidate tag exists
+            const matchingRCTag = existingTags.find(tag => tag.ref === `refs/tags/${{inputs.release_candidate_tag}}`);
+            if (!matchingRCTag) {
+              core.setFailed('No matching release candidate tag found');
+              return;
+            }
+
+            // Check if a release with this tag already exists
+            const existingReleaseTag = existingTags.find(tag => tag.ref === `refs/tags/${releaseTag}`);
+            if (existingReleaseTag) {
+              core.setFailed(`Release tag ${releaseTag} already exists`);
+              return;
+            }
+
+            const releaseCandidateCommitSha = matchingRCTag.object.sha;
+            core.setOutput('release_candidate_commit_sha', releaseCandidateCommitSha);
+
+            try {
+              // Create a tag reference using the GitHub API
+              await github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `refs/tags/${releaseTag}`,
+                sha: releaseCandidateCommitSha
+              });
+
+              console.log(`Successfully created tag: ${releaseTag}`);
+            } catch (error) {
+              core.setFailed(`Failed to create tag: ${error.message}`);
+            }
+
