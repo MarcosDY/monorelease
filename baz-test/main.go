@@ -3,5 +3,5 @@ package baztest
 import "fmt"
 
 func main() {
-	fmt.Println("baz-test project")
+	fmt.Println("baz-test projects")
 }
