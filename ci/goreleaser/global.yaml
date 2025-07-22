@@ -45,6 +45,11 @@ release:
     ## Some title ({{ .Date }})
 
     Welcome to this new release!
+    ---
+    
+    <details>
+    <summary><strong>Internal Development History</strong></summary>
+
   # header:
     # from_file:
       # path: "a-release-notes.md"
