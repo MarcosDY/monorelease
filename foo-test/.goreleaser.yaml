@@ -13,4 +13,23 @@ includes:
   - from_file:
       path: ci/goreleaser/global.yaml
 
+before:
+  hooks:
+    #  Generate the release notes using our custom tool so they can be displayed in GH releases
+    - cmd: >-
+        echo "before"
+        sh scripts/before.sh
+
+release:
+  prerelease: auto
+  name_template: "{{ envOrDefault \"RELEASE_NOTES_COMPONENT\" .ProjectName }}-v{{.Version}}"
+  skip_upload: true
+  mode: replace
+  header:
+    from_file:
+      path: "./tmp/a-release-notes.md"
+  footer: |
+    ## Thanks
+
+    Those were the changes on {{ .Tag }}!
 
