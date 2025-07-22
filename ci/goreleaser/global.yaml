@@ -13,10 +13,14 @@ git:
     - baz-test-helm
     - baz-test-helm
 
-before:
-  hooks:
-    - cmd: "./scripts/post-process-release-notes.sh"
-      output: true
+before_publish:
+  - cmd: "./scripts/post-process-release-notes.sh"
+    output: true
+
+# before:
+  # hooks:
+    # - cmd: "./scripts/post-process-release-notes.sh"
+      # output: true
     #  Generate the release notes using our custom tool so they can be displayed in GH releases
     # - cmd: >-
         # go run ./deploy/create-release-notes
