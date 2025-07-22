@@ -16,7 +16,7 @@ fi
 
 # Obtener las release notes actuales de GitHub
 echo "Fetching current release notes from GitHub..."
-CURRENT_NOTES=$(gh release view "$TAG" --json body --jq -r .body)
+CURRENT_NOTES=$(gh release view "$TAG" --json body --jq .body)
 
 if [ -z "$CURRENT_NOTES" ] || [ "$CURRENT_NOTES" = "null" ]; then
     echo "No release notes found for $TAG"
