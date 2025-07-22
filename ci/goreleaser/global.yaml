@@ -2,16 +2,12 @@ version: 2
 
 env:
   - GHCR_REPO=ghcr.io/marcosdy
-  - PUBLIC_S3_BUCKET=monorepo-releases
 
 nightly:
   version_template: "{{ .Version }}-{{ .ShortCommit }}-dev"
 
 git:
   tag_sort: semver
-  ignore_tag_prefixes:
-    - baz-test-helm
-    - baz-test-helm
 
 # before_publish:
   # - cmd: "./scripts/post-process-release-notes.sh"
