@@ -13,9 +13,9 @@ git:
     - baz-test-helm
     - baz-test-helm
 
-before_publish:
-  - cmd: "./scripts/post-process-release-notes.sh"
-    output: true
+# before_publish:
+  # - cmd: "./scripts/post-process-release-notes.sh"
+    # output: true
 
 # before:
   # hooks:
@@ -31,10 +31,10 @@ before_publish:
         # - GITHUB_TOKEN={{ .Env.GITHUB_TOKEN }}
       # if: "{{ .IsRelease }}"
 
-# after:
-  # hooks:
-    # - cmd: "./scripts/post-process-release-notes.sh"
-      # output: true
+after:
+  hooks:
+    - cmd: "./scripts/post-process-release-notes.sh"
+      output: true
 
 release:
   prerelease: auto
