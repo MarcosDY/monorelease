@@ -24,7 +24,8 @@ includes:
 
 after:
   hooks:
-    - ./scripts/post-process-release-notes.sh
+    - cmd: "./scripts/post-process-release-notes.sh"
+      output: true
 
 release:
   prerelease: auto
