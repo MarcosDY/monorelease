@@ -25,6 +25,11 @@ git:
         # - GITHUB_TOKEN={{ .Env.GITHUB_TOKEN }}
       # if: "{{ .IsRelease }}"
 
+after:
+  hooks:
+    - cmd: "./scripts/post-process-release-notes.sh"
+      output: true
+
 release:
   prerelease: auto
   name_template: "{{ envOrDefault \"RELEASE_NOTES_COMPONENT\" .ProjectName }}-v{{.Version}}"
@@ -33,4 +38,15 @@ release:
   header:
     from_file:
       path: "./tmp/{{ .ProjectName }}-release-notes.md"
+  header: |
+    ## Some title ({{ .Date }})
+
+    Welcome to this new release!
+  # header:
+    # from_file:
+      # path: "a-release-notes.md"
+  footer: |
+    ## Thanks
+
+    Those were the changes on {{ .Tag }}!
 
