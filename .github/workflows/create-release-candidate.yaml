@@ -161,3 +161,4 @@ jobs:
           args: release -f ./${{ matrix.component }}/.goreleaser.yaml --parallelism 1 ${{ inputs.type == 'dev' && '--nightly' || ''}}
         env:
           GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
