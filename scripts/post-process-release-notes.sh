@@ -29,6 +29,12 @@ echo "$CURRENT_NOTES" > "$TEMP_FILE"
 
 echo "Processing release notes content..."
 
+if grep -q "## Changelog (Internal Only)" "$TEMP_FILE"; then
+    echo "\"Changelog (Internal Only)\" already present, no update needed."
+    rm -f "$TEMP_FILE" "${TEMP_FILE}.bak"
+    exit 0
+fi
+
 # Hacer los reemplazos usando sed (versión compatible con macOS)
 sed -i.bak "s/## Changelog/## Changelog (Internal Only)/" "$TEMP_FILE"
 
