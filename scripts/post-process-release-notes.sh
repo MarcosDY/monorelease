@@ -13,7 +13,9 @@ if [ ! -f "$RELEASE_NOTES_FILE" ]; then
 fi
 
 # Hacer los reemplazos
-sed -i.bak "s/**Changelog**/**Changelog** (Internal Only)/" "$RELEASE_NOTES_FILE"
+# "perl -i -pe 's/^## Changelog$/## Changelog (Internal only)/'" "$RELEASE_NOTES_FILE"
+
+sed -i.bak "s/## Changelog/## Changelog (Internal Only)/" "$RELEASE_NOTES_FILE"
 
 # Remover archivo de backup
 rm -f "${RELEASE_NOTES_FILE}.bak"

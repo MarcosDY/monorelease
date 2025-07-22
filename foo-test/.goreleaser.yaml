@@ -31,6 +31,10 @@ release:
   name_template: "{{ envOrDefault \"RELEASE_NOTES_COMPONENT\" .ProjectName }}-v{{.Version}}"
   skip_upload: true
   mode: replace
+  header: |
+    ## Some title ({{ .Date }})
+
+    Welcome to this new release!
   # header:
     # from_file:
       # path: "a-release-notes.md"
