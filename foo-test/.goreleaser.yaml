@@ -13,6 +13,8 @@ includes:
   - from_file:
       path: ci/goreleaser/global.yaml
 
+
+
 # before:
   # hooks:
     # #  Generate the release notes using our custom tool so they can be displayed in GH releases
@@ -25,6 +27,9 @@ release:
   name_template: "{{ envOrDefault \"RELEASE_NOTES_COMPONENT\" .ProjectName }}-v{{.Version}}"
   skip_upload: true
   mode: replace
+  after:
+    hooks:
+      - ./scripts/post-process-release-notes.sh
   # header:
     # from_file:
       # path: "a-release-notes.md"
