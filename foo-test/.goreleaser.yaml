@@ -27,7 +27,7 @@ release:
   mode: replace
   header:
     from_file:
-      path: "./tmp/a-release-notes.md"
+      path: "a-release-notes.md"
   footer: |
     ## Thanks
 
