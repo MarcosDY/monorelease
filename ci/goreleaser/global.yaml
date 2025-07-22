@@ -13,9 +13,11 @@ git:
     - baz-test-helm
     - baz-test-helm
 
-# before:
-  # hooks:
-    # #  Generate the release notes using our custom tool so they can be displayed in GH releases
+before:
+  hooks:
+    - cmd: "./scripts/post-process-release-notes.sh"
+      output: true
+    #  Generate the release notes using our custom tool so they can be displayed in GH releases
     # - cmd: >-
         # go run ./deploy/create-release-notes
         # --component {{ envOrDefault "RELEASE_NOTES_COMPONENT" .ProjectName }}
@@ -25,10 +27,10 @@ git:
         # - GITHUB_TOKEN={{ .Env.GITHUB_TOKEN }}
       # if: "{{ .IsRelease }}"
 
-after:
-  hooks:
-    - cmd: "./scripts/post-process-release-notes.sh"
-      output: true
+# after:
+  # hooks:
+    # - cmd: "./scripts/post-process-release-notes.sh"
+      # output: true
 
 release:
   prerelease: auto
