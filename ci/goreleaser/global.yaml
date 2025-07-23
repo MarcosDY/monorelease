@@ -6,26 +6,12 @@ env:
 nightly:
   version_template: "{{ .Version }}-{{ .ShortCommit }}-dev"
 
-git:
-  tag_sort: semver
+# git:
+  # tag_sort: semver
 
 # before_publish:
   # - cmd: "./scripts/post-process-release-notes.sh"
     # output: true
-
-# before:
-  # hooks:
-    # - cmd: "./scripts/post-process-release-notes.sh"
-      # output: true
-    #  Generate the release notes using our custom tool so they can be displayed in GH releases
-    # - cmd: >-
-        # go run ./deploy/create-release-notes
-        # --component {{ envOrDefault "RELEASE_NOTES_COMPONENT" .ProjectName }}
-        # --output-file ./tmp/{{ .ProjectName }}-release-notes.md
-        # --latest-tag {{if .IsRelease}}{{ .PrefixedTag }}{{ else }}HEAD{{ end }}
-      # env:
-        # - GITHUB_TOKEN={{ .Env.GITHUB_TOKEN }}
-      # if: "{{ .IsRelease }}"
 
 after:
   hooks:
