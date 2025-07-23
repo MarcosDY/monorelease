@@ -1,7 +1,10 @@
 package baztest
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 func main() {
-	fmt.Println("baz-test projects")
+	fmt.Printf("baz-test projects: %v\n", time.Now().Format("2006-01-02 15:04:05"))
 }
