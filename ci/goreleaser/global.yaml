@@ -6,12 +6,8 @@ env:
 nightly:
   version_template: "{{ .Version }}-{{ .ShortCommit }}-dev"
 
-# git:
-  # tag_sort: semver
-
-# before_publish:
-  # - cmd: "./scripts/post-process-release-notes.sh"
-    # output: true
+git:
+  tag_sort: semver
 
 after:
   hooks:

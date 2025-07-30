@@ -12,8 +12,8 @@ env:
 includes:
   - from_file:
       path: ci/goreleaser/global.yaml
-
-
+  - from_file:
+      path: ci/goreleaser/release_blobs.yaml
 
 # before:
   # hooks:

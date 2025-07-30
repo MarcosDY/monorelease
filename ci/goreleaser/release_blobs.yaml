@@ -1,0 +1,42 @@
+version: 2
+
+builds:
+  - id: build-binaries
+    builder: "prebuilt"
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - arm64
+      - amd64
+    hooks:
+      pre:
+        - cmd: ci/goreleaser/build.sh
+          output: true
+          env:
+            - VERSION={{ .Version }}
+            - OS={{ .Os }}
+            - ARCH={{ .Arch }}
+            - TARGET={{ if isEnvSet "TARGET" }}{{ .Env.TARGET }}{{ else }}//{{ .ProjectName }}{{ end }}
+            - OUTPUT_PATH=tmp/{{ .ProjectName }}-release/{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}/{{ .ProjectName }}{{ .Ext }}
+    prebuilt:
+      path: "tmp/{{ .ProjectName }}-release/{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}/{{ .ProjectName }}{{ .Ext }}"
+
+archives:
+  - id: tar-archives
+    format: tar.gz
+    name_template: >-
+      {{ .ProjectName }}-v{{ .Version }}-{{ .Os }}-{{ .Arch }}
+    # This is a hack as described by https://goreleaser.com/customization/archive/#packaging-only-the-binaries
+    files:
+      - this_does_not_exist*
+    ids:
+      - build-binaries
+
+checksum:
+  name_template: "{{ .ProjectName }}-v{{ .Version }}-checksums.txt"
+  algorithm: sha256
+  ids:
+    - build-binaries
+
