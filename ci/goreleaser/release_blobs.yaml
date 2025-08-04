@@ -14,8 +14,8 @@ builds:
       pre:
         - cmd: ci/goreleaser/build.sh
           output: true
-    # prebuilt:
-      # path: "tmp/{{ .ProjectName }}-release/{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}/{{ .ProjectName }}{{ .Ext }}"
+    prebuilt:
+      path: "tmp/{{ .ProjectName }}-release/{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}/{{ .ProjectName }}{{ .Ext }}"
 
 archives:
   - id: tar-archives
