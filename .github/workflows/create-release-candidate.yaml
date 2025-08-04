@@ -136,14 +136,14 @@ jobs:
     strategy:
       matrix:
         component: ${{ fromJSON(needs.setup.outputs.components) }}
-    # runs-on: ubuntu-latest
-    environment: test
-    runs-on:
-      - runs-on=${{ github.run_id }}
-      - runner=2cpu-linux-arm64
-      - image=mise-arm64
-      - cpu=16
-      - spot=false
+    runs-on: ubuntu-latest
+    # environment: test
+    # runs-on:
+      # - runs-on=${{ github.run_id }}
+      # - runner=2cpu-linux-arm64
+      # - image=mise-arm64
+      # - cpu=16
+      # - spot=false
     needs: setup
     steps:
       - name: Checkout
