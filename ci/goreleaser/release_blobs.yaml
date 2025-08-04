@@ -3,17 +3,20 @@ version: 2
 builds:
   - id: build-binaries
     builder: "prebuilt"
-    goos:
-      - darwin
-      - linux
-      - windows
-    goarch:
-      - arm64
-      - amd64
+    targets:
+      - linux_multiarch
+    # goos:
+      # - darwin
+      # - linux
+      # - windows
+    # goarch:
+      # - arm64
+      # - amd64
     hooks:
       pre:
         - cmd: ci/goreleaser/build.sh
           output: true
+
     prebuilt:
       path: "tmp/{{ .ProjectName }}-release/{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}/{{ .ProjectName }}{{ .Ext }}"
 
