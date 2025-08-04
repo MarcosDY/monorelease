@@ -1,0 +1,49 @@
+name: "Setup mise-based build environment"
+description: "Prepares the runner for executing our builds using mise"
+inputs:
+  github_token:
+    required: true
+    description: "Usually passed in via `secrets.GITHUB_TOKEN`. Used to avoid being rate limited."
+  install:
+    description: 'Run mise install'
+    required: false
+    default: "true"
+  install_args:
+    description: 'Arguments to pass to mise install'
+    required: false
+    default: ""
+  working_directory:
+    description: 'The working directory of the mise environment'
+    required: false
+    default: "."
+runs:
+  using: "composite"
+  steps:
+    - name: Add ~/.local/bin to PATH
+      shell: bash
+      run: |
+        echo "${HOME}/.local/bin" >> $GITHUB_PATH
+        echo "$(realpath ${{ inputs.working_directory }})/.aliases" >> $GITHUB_PATH
+
+      # Install co-sign outside of mise to work around a chicken-and-egg
+      # problem installing tools in CI when cosign is being upgraded.
+      # TODO: figure out something better... ideally mise is smarter about
+      # installation order over verification tools
+    - name: Install Cosign
+      uses: sigstore/cosign-installer@d58896d6a1865668819e1d91763c7751a165e159 # v3.9.2
+
+    - name: Install mise
+      uses: jdx/mise-action@eb2f5cb41b0a8175dad2f797e3daca6fe7795a19 # v2
+      with:
+        install: ${{ inputs.install }}
+        install_args: ${{ inputs.install_args }}
+        working_directory: ${{ inputs.working_directory }}
+        log_level: debug
+        cache: false
+        reshim: true
+        # Setting this to an empty string is a hack to work around an issue in
+        # mise-action where it tries to set the GITHUB_TOKEN env variable which
+        # causes @octokit/auth-action to fail because "the token variable is
+        # specified more than once". TODO: try to fix this in mise-action.
+        github_token: ""
+

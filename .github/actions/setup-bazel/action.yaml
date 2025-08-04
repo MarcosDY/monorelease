@@ -1,0 +1,71 @@
+name: "Setup bazel"
+description: "Prepares the runner for executing bazel"
+inputs:
+  github_token:
+    required: true
+    description: "Usually passed in via `secrets.GITHUB_TOKEN`. Used to avoid being rate limited by Nix upstream"
+  # buildbuddy_api_key:
+    # required: true
+    # description: "API key for BuildBuddy service"
+runs:
+  using: "composite"
+  steps:
+    - name: Runner tweaks
+      shell: sh
+      run: |
+        # Recommendation from Siggi at BuildBuddy. They assert that GH action
+        # runners have notoriously flaky networks, which keepalive helps with.
+        sudo sysctl -w net.ipv4.tcp_keepalive_time=60
+
+    - name: Setup build env
+      uses: ./.github/actions/setup-build-env
+      with:
+        github_token: ${{ inputs.github_token }}
+
+    - uses: bazel-contrib/setup-bazel@4fd964a13a440a8aeb0be47350db2fc640f19ca8 # 0.15.0
+      with:
+        # Store build cache per workflow.
+        disk-cache: false
+        # Share repository cache between workflows.
+        repository-cache: false
+        token: ${{ inputs.github_token }}
+
+    - name: Create build config file
+      shell: sh
+      env:
+        BUILDBUDDY_API_KEY: ${{ inputs.buildbuddy_api_key }}
+        COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        BRANCH_NAME: ${{ github.event.pull_request.head.ref || github.ref_name }}
+      run: |
+        cat << EOF > .bazelrc.personal
+        import %workspace%/.bazelrc.ci
+        # common --remote_header=x-buildbuddy-api-key=${BUILDBUDDY_API_KEY}
+        # We use this to tell buildbuddy where to find our commit information
+        # since the HEAD of this PR is detached as a merge-commit.
+        common --build_metadata=COMMIT_SHA=${COMMIT_SHA}
+        common --build_metadata=BRANCH_NAME=${BRANCH_NAME}
+        EOF
+
+    - name: Log in to ghcr.io
+      uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ inputs.github_token }}
+
+    # This step prints out information about bazel which is maybe useful when
+    # looking at logs. It also causes the version of bazel that should be used
+    # to be proactively downloaded, which is important if parallel invocations
+    # to bazel are the first bazel commands to be made.
+    - name: Bazel details
+      shell: sh
+      run: |
+        echo "::group::bazel version"
+        bazel version
+        echo "::endgroup::"
+
+        echo "::group::bazel info"
+        bazel info
+        echo "::endgroup::"
+
+
