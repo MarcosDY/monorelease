@@ -4,7 +4,7 @@ set -euo pipefail
 
 echo "This is a test script to demonstrate error handling."
 
-echo "MISE_TRUSTED_CONFIG_PATHS: $MISE_TRUSTED_CONFIG_PATHS"`
+echo "MISE_TRUSTED_CONFIG_PATHS: $MISE_TRUSTED_CONFIG_PATHS"
 echo "MISE_YES: $MISE_YES"
 echo "MISE_LOG_LEVEL: $MISE_LOG_LEVEL"
 bazel info
