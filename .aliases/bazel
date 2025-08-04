@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# When running under Tilt, we use a separate output base directory to prevent
+# conflicts with regular Bazel builds. This allows Tilt-managed builds to run
+# concurrently with normal Bazel commands without blocking or interference.
+# Execute the provided command(s)
+if [ -n "${TILT_HOST}" ]; then
+    bazelisk --output_base='~/.local/spirl-devenv' "$@" --config=devenv
+else
+    bazelisk "$@"
+fi

@@ -1,4 +1,4 @@
-package bartest
+package main
 
 import (
 	"fmt"

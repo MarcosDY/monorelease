@@ -1,0 +1,18 @@
+# Use the host's network for builds
+build --host_force_python=PY3
+
+# Show output for failing tests
+test --test_output=errors
+
+# Make Bazel print all command lines for debugging
+build:debug --verbose_failures --sandbox_debug
+
+# Performance optimizations
+build --worker_multiplex
+
+# Remote cache settings (uncomment if using remote cache)
+# build --remote_cache=...
+
+# Use --config=ci for CI builds
+build:ci --keep_going
+test:ci --test_output=all

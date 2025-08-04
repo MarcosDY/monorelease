@@ -1,12 +1,13 @@
-package baztest
+package main
 
 import (
 	"fmt"
+	"os"
 	"time"
 )
 
-func main(args []string) {
-	if len(args) < 1 {
+func main() {
+	if len(os.Args) < 2 {
 		fmt.Println("Usage: baztest <project>")
 		return
 	}

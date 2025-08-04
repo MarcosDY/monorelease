@@ -1,0 +1,14 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "foo-test_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/marcosdy/monoreleaser/foo-test",
+    visibility = ["//visibility:private"],
+)
+
+go_binary(
+    name = "foo-test",
+    embed = [":foo-test_lib"],
+    visibility = ["//visibility:public"],
+)
