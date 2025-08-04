@@ -3,9 +3,19 @@
 # When running under Tilt, we use a separate output base directory to prevent
 # conflicts with regular Bazel builds. This allows Tilt-managed builds to run
 # concurrently with normal Bazel commands without blocking or interference.
+
+# Use mise's bazelisk if available, otherwise fall back to system bazelisk
+BAZELISK_CMD="bazelisk"
+if command -v mise >/dev/null 2>&1; then
+    MISE_BAZELISK=$(mise which bazelisk 2>/dev/null)
+    if [ -n "$MISE_BAZELISK" ]; then
+        BAZELISK_CMD="$MISE_BAZELISK"
+    fi
+fi
+
 # Execute the provided command(s)
 if [ -n "${TILT_HOST}" ]; then
-    bazelisk --output_base='~/.local/spirl-devenv' "$@" --config=devenv
+    "$BAZELISK_CMD" --output_base='~/.local/spirl-devenv' "$@" --config=devenv
 else
-    bazelisk "$@"
+    "$BAZELISK_CMD" "$@"
 fi

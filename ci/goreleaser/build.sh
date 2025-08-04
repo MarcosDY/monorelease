@@ -15,7 +15,7 @@ echo "MISE_LOG_LEVEL: $MISE_LOG_LEVEL"
 
 bazel info
 
-bazel build //:test_target || {
+bazel build || {
   echo "Bazel build failed. Exiting script."
   exit 1
 }

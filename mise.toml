@@ -1,0 +1,79 @@
+# To update this version, please run
+# mise run mise-update <NEW_VERSION>
+min_version = "2025.7.26"
+
+[settings]
+experimental = true
+fetch_remote_versions_timeout = "20s"
+
+[tools]
+# Core build tools
+bazelisk = "1.25.0"
+go = "1.24.5"
+
+# Go development tools
+"go:github.com/go-delve/delve/cmd/dlv" = "latest"  # Go debugger
+"go:golang.org/x/tools/cmd/goimports" = "0.35.0"   # Import formatting
+golangci-lint = "2.3.0"                            # Go linting
+
+# Bazel tools
+"ubi:bazelbuild/buildtools" = { exe = "buildifier", version = "8.2.1" }
+
+# Utility tools
+fd = "10.2.0"        # Fast file finder
+gh = "2.67.0"        # GitHub CLI (for CI/workflows)
+jq = "1.7.1"         # JSON processing
+shellcheck = "v0.10.0" # Shell script linting
+
+# Security tools (used by mise itself)
+cosign = "2.5.3"       # Package verification 
+slsa-verifier = '2.7.0' # Package verification
+
+[env]
+_.path = ["./.aliases/"]
+GOPROXY = 'https://proxy.golang.org|https://goproxy.io|direct'
+
+[tasks.build]
+description = "Build all Bazel targets"
+run = "bazel build //..."
+
+[tasks.test]
+description = "Run all Bazel tests"
+run = "bazel test //..."
+
+[tasks.gazelle]
+description = "Update BUILD files with Gazelle"
+run = "bazel run //:gazelle"
+
+[tasks.gazelle-repos]
+description = "Update Go dependencies with Gazelle"
+run = "bazel run //:gazelle-update-repos"
+
+[tasks.clean]
+description = "Clean Bazel cache"
+run = "bazel clean"
+
+[tasks.run-foo]
+description = "Run foo-test binary"
+run = "bazel run //foo-test:foo-test"
+
+[tasks.run-bar]
+description = "Run bar-test binary"
+run = "bazel run //bar-test:bar-test"
+
+[tasks.run-baz]
+description = "Run baz-test binary"
+run = "bazel run //baz-test:baz-test"
+
+[tasks.lint]
+description = "Run Go linter"
+run = "golangci-lint run"
+
+[tasks.fmt]
+description = "Format Go code"
+run = "goimports -w ."
+
+[tasks.mod-tidy]
+description = "Clean up go.mod"
+run = "go mod tidy"
+
